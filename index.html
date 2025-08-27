@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Islamic Chatbot</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #128C7E;
+      --primary-dark: #075E54;
+      --primary-light: #25D366;
+      --accent-color: #FFD700;
+      --text-color: #262626;
+      --light-bg: #f8f6f2;
+      --white: #ffffff;
+      --grey-light: #e0e0e0;
+      --grey: #8696a0;
+      --shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+      --border-radius: 12px;
+    }
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Roboto', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    
+    body {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    
+    .app-container {
+      display: flex;
+      width: 100%;
+      max-width: 1200px;
+      height: 90vh;
+      background: var(--white);
+      border-radius: 18px;
+      overflow: hidden;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
+      position: relative;
+    }
+    
+    /* Side Panel Styles */
+    #side-panel {
+      width: 320px;
+      background: var(--light-bg);
+      border-right: 1px solid var(--grey-light);
+      display: flex;
+      flex-direction: column;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 10;
+    }
+    
+    .panel-header {
+      padding: 20px;
+      background: var(--primary-dark);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: var(--shadow);
+    }
+    
+    .panel-header h2 {
+      font-weight: 600;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    #new-chat-btn {
+      background: var(--primary-color);
+      color: var(--white);
+      border: none;
+      border-radius: 50%;
+      width: 40px;
+      height: 40px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+    }
+    
+    #new-chat-btn:hover {
+      background: var(--primary-light);
+      transform: scale(1.05);
+    }
+    
+    .chat-history {
+      flex: 1;
+      overflow-y: auto;
+      padding: 15px;
+    }
+    
+    .chat-item {
+      padding: 15px;
+      border-radius: var(--border-radius);
+      margin-bottom: 10px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      flex-direction: column;
+      background: var(--white);
+      box-shadow: var(--shadow);
+      border-left: 4px solid transparent;
+    }
+    
+    .chat-item:hover {
+      background: #e8f5e9;
+      transform: translateY(-2px);
+    }
+    
+    .chat-item.active {
+      background: #e0f2e6;
+      border-left: 4px solid var(--primary-dark);
+    }
+    
+    .chat-title {
+      font-weight: 600;
+      color: var(--primary-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-bottom: 5px;
+    }
+    
+    .chat-preview {
+      font-size: 13px;
+      color: var(--grey);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .chat-date {
+      font-size: 11px;
+      color: var(--grey);
+      margin-top: 8px;
+      align-self: flex-end;
+    }
+    
+    .panel-footer {
+      padding: 15px;
+      border-top: 1px solid var(--grey-light);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: var(--white);
+    }
+    
+    #toggle-panel {
+      background: var(--light-bg);
+      border: 1px solid var(--grey-light);
+      border-radius: 50%;
+      width: 35px;
+      height: 35px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+    }
+    
+    #toggle-panel:hover {
+      background: var(--grey-light);
+    }
+    
+    /* Chat Container Styles */
+    #chat-container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23075E54' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+    
+    .chat-header {
+      background: var(--primary-dark);
+      color: var(--white);
+      padding: 20px;
+      text-align: center;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      z-index: 5;
+    }
+    
+    .chat-header h2 {
+      font-weight: 600;
+      font-size: 22px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .chat-header h2 i {
+      font-size: 26px;
+      color: var(--accent-color);
+    }
+    
+    .chat-header::after {
+      content: '';
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 3px;
+      background: linear-gradient(90deg, var(--primary-light) 0%, var(--accent-color) 100%);
+    }
+    
+    #chat-box {
+      flex: 1;
+      padding: 25px;
+      overflow-y: auto;
+      background: rgba(229, 221, 213, 0.5);
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .message-container {
+      display: flex;
+      margin-bottom: 20px;
+      animation: fadeIn 0.3s ease;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .bot-message {
+      justify-content: flex-start;
+    }
+    
+    .user-message {
+      justify-content: flex-end;
+    }
+    
+    .message {
+      max-width: 75%;
+      padding: 15px 20px;
+      border-radius: 18px;
+      position: relative;
+      line-height: 1.5;
+      box-shadow: var(--shadow);
+    }
+    
+    .bot-message .message {
+      background: var(--white);
+      border-top-left-radius: 4px;
+      color: var(--text-color);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .user-message .message {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+      border-top-right-radius: 4px;
+      color: var(--white);
+    }
+    
+    .message-time {
+      font-size: 11px;
+      color: var(--grey);
+      text-align: right;
+      margin-top: 5px;
+      opacity: 0.8;
+    }
+    
+    .user-message .message-time {
+      color: rgba(255, 255, 255, 0.8);
+    }
+    
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: 12px;
+      align-self: flex-end;
+      flex-shrink: 0;
+      box-shadow: var(--shadow);
+    }
+    
+    .user-avatar {
+      background: linear-gradient(135deg, var(--primary-light) 0%, var(--primary-color) 100%);
+      margin-left: 12px;
+      margin-right: 0;
+    }
+    
+    #input-area {
+      display: flex;
+      padding: 20px;
+      background: var(--white);
+      border-top: 1px solid var(--grey-light);
+      align-items: center;
+      box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
+      z-index: 5;
+    }
+    
+    #user-input {
+      flex: 1;
+      padding: 15px 20px;
+      border: 1px solid var(--grey-light);
+      border-radius: 24px;
+      font-size: 16px;
+      outline: none;
+      background: var(--light-bg);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+      transition: all 0.2s;
+    }
+    
+    #user-input:focus {
+      border-color: var(--primary-light);
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 0 0 2px rgba(37, 211, 102, 0.2);
+    }
+    
+    #send-button {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-color) 100%);
+      color: var(--white);
+      border: none;
+      margin-left: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+    }
+    
+    #send-button:hover {
+      background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-light) 100%);
+      transform: scale(1.05);
+    }
+    
+    #send-button:active {
+      transform: scale(0.95);
+    }
+    
+    .typing-indicator {
+      display: flex;
+      padding: 15px 20px;
+      background: var(--white);
+      border-radius: 18px;
+      border-top-left-radius: 4px;
+      width: fit-content;
+      margin-bottom: 15px;
+      box-shadow: var(--shadow);
+      align-items: center;
+    }
+    
+    .typing-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--grey);
+      border-radius: 50%;
+      margin: 0 3px;
+      opacity: 0.6;
+      animation: typingAnimation 1.4s infinite;
+    }
+    
+    .typing-dot:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+    
+    .typing-dot:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+    
+    @keyframes typingAnimation {
+      0%, 60%, 100% {
+        transform: translateY(0);
+        opacity: 0.6;
+      }
+      30% {
+        transform: translateY(-5px);
+        opacity: 1;
+      }
+    }
+    
+    .welcome-message {
+      text-align: center;
+      padding: 25px;
+      background: var(--white);
+      border-radius: var(--border-radius);
+      margin-bottom: 25px;
+      box-shadow: var(--shadow);
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      animation: fadeIn 0.5s ease;
+    }
+    
+    .welcome-message h3 {
+      color: var(--primary-dark);
+      margin-bottom: 12px;
+      font-size: 24px;
+      font-family: 'Amiri', serif;
+    }
+    
+    .welcome-message p {
+      color: var(--text-color);
+      font-size: 16px;
+      line-height: 1.6;
+    }
+    
+    /* Side panel visibility classes */
+    .side-panel-hidden {
+      transform: translateX(-100%);
+      width: 0 !important;
+      opacity: 0;
+      overflow: hidden;
+    }
+    
+    .side-panel-visible {
+      transform: translateX(0);
+      opacity: 1;
+    }
+    
+    /* Quick Actions */
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 15px 0 25px;
+      justify-content: center;
+    }
+    
+    .quick-action-btn {
+      padding: 10px 15px;
+      background: var(--white);
+      border: 1px solid var(--grey-light);
+      border-radius: 20px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      box-shadow: var(--shadow);
+    }
+    
+    .quick-action-btn:hover {
+      background: var(--primary-dark);
+      color: var(--white);
+      transform: translateY(-2px);
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 900px) {
+      .app-container {
+        flex-direction: column;
+        height: 95vh;
+      }
+      
+      #side-panel {
+        width: 100%;
+        height: 40%;
+        border-right: none;
+        border-bottom: 1px solid var(--grey-light);
+      }
+      
+      .side-panel-hidden {
+        transform: translateY(-100%);
+        height: 0 !important;
+      }
+      
+      #chat-container {
+        width: 100%;
+      }
+      
+      .message {
+        max-width: 85%;
+      }
+    }
+    
+    @media (max-width: 600px) {
+      .app-container {
+        height: 95vh;
+        border-radius: 12px;
+      }
+      
+      .chat-header {
+        padding: 15px;
+      }
+      
+      #chat-box {
+        padding: 15px;
+      }
+      
+      .welcome-message {
+        padding: 15px;
+      }
+      
+      .quick-actions {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .quick-action-btn {
+        width: 100%;
+        text-align: center;
+      }
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 30px 20px;
+      color: var(--grey);
+    }
+    
+    .empty-state i {
+      font-size: 50px;
+      margin-bottom: 15px;
+      color: var(--grey-light);
+    }
+    
+    .empty-state p {
+      font-size: 16px;
+    }
+    
+    /* Quran verse decoration */
+    .quran-verse {
+      font-family: 'Amiri', serif;
+      text-align: right;
+      padding: 15px;
+      margin: 15px 0;
+      background: rgba(7, 94, 84, 0.1);
+      border-right: 4px solid var(--primary-dark);
+      border-radius: var(--border-radius);
+      font-size: 18px;
+      line-height: 1.8;
+    }
+    
+    /* Animation for new messages */
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .message-container {
+      animation: slideIn 0.3s ease;
+    }
+    
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: var(--primary-color);
+      border-radius: 10px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--primary-dark);
+    }
+  </style>
+</head>
+<body>
+  <div class="app-container">
+    <!-- Side Panel for Chat History -->
+    <div id="side-panel" class="side-panel-visible">
+      <div class="panel-header">
+        <h2><i class="fas fa-history"></i> Chat History</h2>
+        <button id="new-chat-btn" title="Start New Chat">
+          <i class="fas fa-plus"></i>
+        </button>
+      </div>
+      
+      <div class="chat-history" id="chat-history-list">
+        <!-- Chat history will be populated here -->
+        <div class="empty-state">
+          <i class="fas fa-comments"></i>
+          <p>No chat history yet</p>
+        </div>
+      </div>
+      
+      <div class="panel-footer">
+        <button id="toggle-panel">
+          <i class="fas fa-chevron-left"></i>
+        </button>
+      </div>
+    </div>
+    
+    <!-- Main Chat Container -->
+    <div id="chat-container">
+      <div class="chat-header">
+        <h2><i class="fas fa-mosque"></i> Islamic Assistant</h2>
+      </div>
+      
+      <div id="chat-box">
+        <div class="welcome-message">
+          <h3>السلام عليكم ورحمة الله وبركاته</h3>
+          <p>I am your Islamic assistant. Ask me questions about Islam, Quran, Hadith, and Islamic practices.</p>
+          
+          <div class="quick-actions">
+            <button class="quick-action-btn" data-question="What are the five pillars of Islam?">Five Pillars</button>
+            <button class="quick-action-btn" data-question="Tell me about Prophet Muhammad">Prophet Muhammad</button>
+            <button class="quick-action-btn" data-question="How to perform Salah?">How to Pray</button>
+            <button class="quick-action-btn" data-question="What does Quran say about patience?">Patience in Quran</button>
+          </div>
+        </div>
+      </div>
+      
+      <div id="input-area">
+        <input type="text" id="user-input" placeholder="Type your question here...">
+        <button id="send-button">
+          <i class="fas fa-paper-plane"></i>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    // Supabase config
+    const SUPABASE_URL = "https://tvqzkqyqkighoscozkqo.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR2cXprcXlxa2lnaG9zY296a3FvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQxMTkzMzgsImV4cCI6MjA2OTY5NTMzOH0.3DYpuZmV3-FNXdRXU_pmL8xSIivq0mYc4XipmDtC0es";
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    const OPENROUTER_API_KEY = "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";
+    const MODEL = "openai/gpt-3.5-turbo";
+
+    // DOM Elements
+    const chatBox = document.getElementById("chat-box");
+    const userInput = document.getElementById("user-input");
+    const sendButton = document.getElementById("send-button");
+    const newChatBtn = document.getElementById("new-chat-btn");
+    const togglePanelBtn = document.getElementById("toggle-panel");
+    const sidePanel = document.getElementById("side-panel");
+    const chatHistoryList = document.getElementById("chat-history-list");
+    const quickActionBtns = document.querySelectorAll('.quick-action-btn');
+
+    // State variables
+    let currentChatId = null;
+    let chats = [];
+
+    // Salam shortcut responses
+    const salamReplies = {
+      "salam": "Wa Alaikum Assalam wa Rahmatullahi wa Barakatuh 🌸",
+      "assalamu alaikum": "Wa Alaikum Assalam wa Rahmatullahi wa Barakatuh 🤲",
+      "السلام علیکم": "وَعَلَيْكُمُ السَّلَامُ وَرَحْمَةُ اللهِ وَبَرَكَاتُهُ 🌹",
+      "hello": "Assalamu Alaikum! How can I help you with Islamic knowledge today?",
+      "hi": "Assalamu Alaikum! How can I assist you today?"
+    };
+
+    // Initialize the chat
+    document.addEventListener('DOMContentLoaded', function() {
+      loadChats();
+      
+      // Event listeners
+      sendButton.addEventListener('click', askQuestion);
+      userInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          askQuestion();
+        }
+      });
+      
+      newChatBtn.addEventListener('click', startNewChat);
+      togglePanelBtn.addEventListener('click', toggleSidePanel);
+      
+      // Quick action buttons
+      quickActionBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          userInput.value = this.dataset.question;
+          askQuestion();
+        });
+      });
+    });
+
+    // Start a new chat
+    function startNewChat() {
+      currentChatId = null;
+      chatBox.innerHTML = `
+        <div class="welcome-message">
+          <h3>السلام عليكم ورحمة الله وبركاته</h3>
+          <p>I am your Islamic assistant. Ask me questions about Islam, Quran, Hadith, and Islamic practices.</p>
+          
+          <div class="quick-actions">
+            <button class="quick-action-btn" data-question="What are the five pillars of Islam?">Five Pillars</button>
+            <button class="quick-action-btn" data-question="Tell me about Prophet Muhammad">Prophet Muhammad</button>
+            <button class="quick-action-btn" data-question="How to perform Salah?">How to Pray</button>
+            <button class="quick-action-btn" data-question="What does Quran say about patience?">Patience in Quran</button>
+          </div>
+        </div>
+      `;
+      
+      // Reattach event listeners to quick action buttons
+      document.querySelectorAll('.quick-action-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+          userInput.value = this.dataset.question;
+          askQuestion();
+        });
+      });
+      
+      userInput.value = "";
+      userInput.focus();
+      
+      // Update active state in history list
+      document.querySelectorAll('.chat-item').forEach(item => {
+        item.classList.remove('active');
+      });
+    }
+
+    /// Toggle side panel visibility
+function toggleSidePanel() {
+  sidePanel.classList.toggle('side-panel-hidden');
+  const icon = togglePanelBtn.querySelector('i');
+  
+  if (sidePanel.classList.contains('side-panel-hidden')) {
+    icon.classList.remove('fa-chevron-left');
+    icon.classList.add('fa-chevron-right');
+  } else {
+    icon.classList.remove('fa-chevron-right');
+    icon.classList.add('fa-chevron-left');
+  }
+}
+
+    async function askQuestion() {
+      const question = userInput.value.trim();
+      if (!question) return;
+
+      // If no active chat, create a new one
+      if (!currentChatId) {
+        currentChatId = Date.now().toString();
+        await saveChatSession(currentChatId, question.substring(0, 30));
+      }
+
+      addMessage("user", question);
+      userInput.value = "";
+
+      // Show typing indicator
+      showTypingIndicator();
+
+      // 🔹 Salam check
+      const qLower = question.toLowerCase();
+      if (salamReplies[qLower]) {
+        // Remove typing indicator
+        removeTypingIndicator();
+        
+        // Simulate a small delay for natural feel
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        const reply = salamReplies[qLower];
+        addMessage("bot", reply);
+        await saveChat(question, reply);
+        await updateChatSession(currentChatId, question, reply);
+        updateChatHistoryList();
+        return;
+      }
+
+      // Detect language of the question
+      const isUrdu = detectUrduLanguage(question);
+      
+      try {
+        // 🔹 Otherwise ask OpenRouter
+        const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Authorization": `Bearer ${OPENROUTER_API_KEY}`,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            model: MODEL,
+            messages: [
+              { 
+                role: "system", 
+                content: isUrdu 
+                  ? "آپ ایک اسلامی اسکالر چیٹ بوٹ ہیں۔ صرف اسلامی سوالات کے جواب دیں۔ مختصر اور مہذب انداز میں رومن اردو میں جواب دیں۔ اگر سوال اسلام کے بارے میں نہیں ہے تو معذرت کے ساتھ بتائیں کہ آپ صرف اسلامی سوالات کے جواب دے سکتے ہیں۔"
+                  : "You are an Islamic scholar chatbot. Answer only Islamic questions politely and briefly in English. If the question is not about Islam, politely decline to answer and explain that you can only answer Islamic questions." 
+              },
+              { role: "user", content: question }
+            ]
+          })
+        });
+
+        const data = await response.json();
+        const answer = data.choices?.[0]?.message?.content || (isUrdu ? "معاف کیجئے، جواب نہیں مل سکا۔" : "Sorry, I couldn't get an answer.");
+        
+        // Remove typing indicator
+        removeTypingIndicator();
+        
+        // Simulate typing delay for more natural interaction
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        addMessage("bot", answer);
+
+        // Save to Supabase
+        await saveChat(question, answer);
+        await updateChatSession(currentChatId, question, answer);
+        updateChatHistoryList();
+      } catch (error) {
+        removeTypingIndicator();
+        addMessage("bot", isUrdu ? "نیٹ ورک خرابی ہے۔ براہ کرم اپنا کنکشن چیک کریں اور دوبارہ کوشش کریں۔" : "Network error. Please check your connection and try again.");
+      }
+    }
+
+    // Detect if the text contains Urdu/Roman Urdu words
+    function detectUrduLanguage(text) {
+      const urduKeywords = [
+        'islam', 'allah', 'quran', 'sunnah', 'hadith', 'namaz', 'roza', 'hajj', 'zakat', 
+        'salah', 'sawm', 'prophet', 'muhammad', 'rasool', 'deen', 'iman', 'islamic',
+        'kia', 'kya', 'kaise', 'kahan', 'kab', 'kyun', 'kon', 'kis', 'kitna', 'kitni',
+        'hai', 'hain', 'ho', 'haiyye', 'shukriya', 'meherbani', 'madad', 'sawal', 'jawab',
+        'salam', 'assalam', 'alaikum', 'masjid', 'madrassa', 'quran', 'surah', 'ayat',
+        'fatwa', 'fiqh', 'aqeeda', 'tauheed', 'risalat', 'akhirat', 'jannat', 'dozakh'
+      ];
+      
+      const textLower = text.toLowerCase();
+      return urduKeywords.some(keyword => textLower.includes(keyword));
+    }
+
+    // Save individual message to Supabase
+    async function saveChat(q, a) {
+      const { error } = await client.from("chats").insert([{ question: q, answer: a }]);
+      if (error) console.error("Supabase Save Error:", error);
+    }
+
+    // Save chat session to local storage
+    async function saveChatSession(chatId, title) {
+      const chatSession = {
+        id: chatId,
+        title: title,
+        timestamp: new Date().toISOString(),
+        messages: []
+      };
+      
+      // Get existing chats or initialize empty array
+      const existingChats = JSON.parse(localStorage.getItem('islamicChats') || '[]');
+      existingChats.push(chatSession);
+      localStorage.setItem('islamicChats', JSON.stringify(existingChats));
+      
+      chats = existingChats;
+      updateChatHistoryList();
+    }
+
+    // Update chat session with new messages
+    async function updateChatSession(chatId, question, answer) {
+      const existingChats = JSON.parse(localStorage.getItem('islamicChats') || '[]');
+      const chatIndex = existingChats.findIndex(chat => chat.id === chatId);
+      
+      if (chatIndex !== -1) {
+        // Add new messages to the chat
+        existingChats[chatIndex].messages.push({
+          question: question,
+          answer: answer,
+          timestamp: new Date().toISOString()
+        });
+        
+        // Update the title if it's the first message
+        if (existingChats[chatIndex].messages.length === 1) {
+          existingChats[chatIndex].title = question.substring(0, 30) + (question.length > 30 ? '...' : '');
+        }
+        
+        localStorage.setItem('islamicChats', JSON.stringify(existingChats));
+        chats = existingChats;
+      }
+    }
+
+    // Load chat history from local storage
+    function loadChats() {
+      const savedChats = JSON.parse(localStorage.getItem('islamicChats') || '[]');
+      chats = savedChats;
+      updateChatHistoryList();
+    }
+
+    // Update the chat history list in the UI
+    function updateChatHistoryList() {
+      if (chats.length === 0) {
+        chatHistoryList.innerHTML = `
+          <div class="empty-state">
+            <i class="fas fa-comments"></i>
+            <p>No chat history yet</p>
+          </div>
+        `;
+        return;
+      }
+      
+      chatHistoryList.innerHTML = '';
+      
+      // Sort chats by timestamp (newest first)
+      const sortedChats = [...chats].sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp));
+      
+      sortedChats.forEach(chat => {
+        const chatItem = document.createElement('div');
+        chatItem.className = `chat-item ${chat.id === currentChatId ? 'active' : ''}`;
+        chatItem.dataset.chatId = chat.id;
+        
+        const lastMessage = chat.messages.length > 0 
+          ? chat.messages[chat.messages.length - 1] 
+          : null;
+        
+        const preview = lastMessage 
+          ? (lastMessage.question.substring(0, 40) + (lastMessage.question.length > 40 ? '...' : ''))
+          : 'No messages yet';
+        
+        const date = new Date(chat.timestamp);
+        const formattedDate = `${date.toLocaleDateString()} ${date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}`;
+        
+        chatItem.innerHTML = `
+          <div class="chat-title">${chat.title}</div>
+          <div class="chat-preview">${preview}</div>
+          <div class="chat-date">${formattedDate}</div>
+        `;
+        
+        chatItem.addEventListener('click', () => loadChat(chat.id));
+        chatHistoryList.appendChild(chatItem);
+      });
+    }
+
+    // Load a specific chat
+    function loadChat(chatId) {
+      const chat = chats.find(c => c.id === chatId);
+      if (!chat) return;
+      
+      currentChatId = chatId;
+      chatBox.innerHTML = '';
+      
+      chat.messages.forEach(msg => {
+        addMessage("user", msg.question);
+        addMessage("bot", msg.answer);
+      });
+      
+      // Update active state in history list
+      document.querySelectorAll('.chat-item').forEach(item => {
+        if (item.dataset.chatId === chatId) {
+          item.classList.add('active');
+        } else {
+          item.classList.remove('active');
+        }
+      });
+      
+      // Scroll to bottom of chat
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Add message to UI
+    function addMessage(sender, text) {
+      const messageContainer = document.createElement("div");
+      messageContainer.className = `message-container ${sender}-message`;
+      
+      if (sender === "bot") {
+        const avatar = document.createElement("div");
+        avatar.className = "avatar";
+        avatar.innerHTML = '<i class="fas fa-mosque"></i>';
+        messageContainer.appendChild(avatar);
+      }
+      
+      const messageDiv = document.createElement("div");
+      messageDiv.className = "message";
+      messageDiv.textContent = text;
+      
+      const timeSpan = document.createElement("div");
+      timeSpan.className = "message-time";
+      timeSpan.textContent = getCurrentTime();
+      
+      messageDiv.appendChild(timeSpan);
+      messageContainer.appendChild(messageDiv);
+      
+      if (sender === "user") {
+        const avatar = document.createElement("div");
+        avatar.className = "avatar user-avatar";
+        avatar.innerHTML = '<i class="fas fa-user"></i>';
+        messageContainer.appendChild(avatar);
+      }
+      
+      chatBox.appendChild(messageContainer);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Show typing indicator
+    function showTypingIndicator() {
+      const typingContainer = document.createElement("div");
+      typingContainer.className = "message-container bot-message";
+      typingContainer.id = "typing-indicator";
+      
+      const avatar = document.createElement("div");
+      avatar.className = "avatar";
+      avatar.innerHTML = '<i class="fas fa-mosque"></i>';
+      typingContainer.appendChild(avatar);
+      
+      const typingDiv = document.createElement("div");
+      typingDiv.className = "typing-indicator";
+      
+      for (let i = 0; i < 3; i++) {
+        const dot = document.createElement("div");
+        dot.className = "typing-dot";
+        typingDiv.appendChild(dot);
+      }
+      
+      typingContainer.appendChild(typingDiv);
+      chatBox.appendChild(typingContainer);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    // Remove typing
+     // Remove typing indicator
+    function removeTypingIndicator() {
+      const typingIndicator = document.getElementById("typing-indicator");
+      if (typingIndicator) {
+        typingIndicator.remove();
+      }
+    }
+
+    // Get current time for message timestamp
+    function getCurrentTime() {
+      const now = new Date();
+      return now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    }
+  </script>
+</body>
+</html>
